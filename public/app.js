@@ -279,6 +279,15 @@ socket.on('gameStarted', ({ isImpostor: impostor, location }) => {
         }
     }
     
+    // Mostrar botones según si es host
+    if (isHost) {
+        endRoundBtn.style.display = 'block';
+        backToLobbyBtn.style.display = 'block';
+    } else {
+        endRoundBtn.style.display = 'none';
+        backToLobbyBtn.style.display = 'none';
+    }
+    
     showScreen(gameScreen);
 });
 
