@@ -64,6 +64,7 @@ io.on('connection', (socket) => {
       status: 'LOBBY',
       currentLocation: null,
       impostorId: null,
+      lastImpostorId: null, // Guardar el último impostor para evitar repetición
       selectedGroup: null, // Grupo seleccionado (leyendas, actual, cancha)
       players: [{
         id: socket.id,
@@ -171,9 +172,21 @@ io.on('connection', (socket) => {
     const randomLocation = locations[Math.floor(Math.random() * locations.length)];
     game.currentLocation = randomLocation.id;
     
-    // Seleccionar impostor aleatorio
-    const randomPlayerIndex = Math.floor(Math.random() * game.players.length);
-    game.impostorId = game.players[randomPlayerIndex].id;
+    // Seleccionar impostor aleatorio (evitando que sea el mismo de la ronda anterior)
+    let availablePlayers = game.players;
+    
+    // Si hay más de 1 jugador y hubo un impostor anterior, excluirlo
+    if (game.players.length > 1 && game.lastImpostorId) {
+      availablePlayers = game.players.filter(player => player.id !== game.lastImpostorId);
+      // Si solo queda 1 jugador disponible, usar todos (para evitar problemas)
+      if (availablePlayers.length === 0) {
+        availablePlayers = game.players;
+      }
+    }
+    
+    const randomPlayerIndex = Math.floor(Math.random() * availablePlayers.length);
+    game.impostorId = availablePlayers[randomPlayerIndex].id;
+    game.lastImpostorId = game.impostorId; // Guardar para la próxima ronda
     
     game.status = 'PLAYING';
     game.lastActivity = Date.now();
