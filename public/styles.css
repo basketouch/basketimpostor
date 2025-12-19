@@ -202,7 +202,8 @@ h3 {
     text-align: center;
     margin: 30px 0;
     padding: 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--card);
+    border: 2px solid var(--primary);
     border-radius: 15px;
     color: var(--white);
 }
@@ -401,7 +402,8 @@ h3 {
 .impostor-message {
     text-align: center;
     padding: 40px 20px;
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    background: var(--card);
+    border: 3px solid var(--danger);
     border-radius: 15px;
     color: var(--white);
     box-shadow: var(--shadow-lg);
