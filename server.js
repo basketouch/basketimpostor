@@ -339,8 +339,8 @@ app.post('/api/track', (req, res) => {
   res.json({ success: true });
 });
 
-// Panel de Admin
-app.get('/admin', (req, res) => {
+// Panel de Admin (ruta oculta)
+app.get('/admin-7x9k2m4p-basket-2024', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
