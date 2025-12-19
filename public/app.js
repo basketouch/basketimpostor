@@ -157,8 +157,6 @@ endRoundBtn.addEventListener('click', () => {
 backToLobbyBtn.addEventListener('click', () => {
     if (isHost) {
         socket.emit('endRound', { roomCode: currentRoomCode });
-    } else {
-        showScreen(lobbyScreen);
     }
 });
 
@@ -292,6 +290,9 @@ socket.on('gameStateChanged', ({ status }) => {
         // Limpiar selección visual de grupo (pero mantener la selección en el servidor)
         groupButtons.forEach(btn => btn.classList.remove('selected'));
         selectedGroupDisplay.style.display = 'none';
+        // Ocultar botones de juego
+        endRoundBtn.style.display = 'none';
+        backToLobbyBtn.style.display = 'none';
     }
 });
 
