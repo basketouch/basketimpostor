@@ -626,11 +626,12 @@ h3 {
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
-    z-index: 10;
-    background: rgba(0, 0, 0, 0.7);
+    z-index: 100;
+    background: rgba(0, 0, 0, 0.8);
     padding: 15px 30px;
     border-radius: 50px;
     border: 2px solid var(--primary);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
 }
 
 .countdown {
@@ -679,6 +680,10 @@ h3 {
     object-position: center;
     display: block;
     transition: transform 0.3s;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
 }
 
 .ad-container-fullscreen:hover .interstitial-image {
