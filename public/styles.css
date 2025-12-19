@@ -645,16 +645,16 @@ h3 {
 }
 
 #playersList::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: var(--bg);
     border-radius: 10px;
 }
 
 #playersList::-webkit-scrollbar-thumb {
-    background: var(--primary-color);
+    background: var(--primary);
     border-radius: 10px;
 }
 
 #playersList::-webkit-scrollbar-thumb:hover {
-    background: #E55A2B;
+    background: #ffed4e;
 }
 
