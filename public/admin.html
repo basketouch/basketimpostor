@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin - Basket Impostor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #121212 0%, #1e1e1e 100%);
+            color: #ffffff;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #FFD700;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #1e1e1e;
+            border: 2px solid #2a9d8f;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-card h3 {
+            color: #FFD700;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-card .value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .label {
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .section {
+            background: #1e1e1e;
+            border: 2px solid #2a9d8f;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .section h2 {
+            color: #FFD700;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .theme-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .theme-item {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #FFD700;
+        }
+
+        .theme-item strong {
+            color: #FFD700;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .theme-item span {
+            font-size: 1.5rem;
+            color: #ffffff;
+        }
+
+        .button {
+            background: #2a9d8f;
+            color: #ffffff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .button:hover {
+            background: #21867a;
+            transform: translateY(-2px);
+        }
+
+        .button.danger {
+            background: #ef476f;
+        }
+
+        .button.danger:hover {
+            background: #d63d5f;
+        }
+
+        .refresh-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #FFD700;
+            color: #121212;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s;
+        }
+
+        .refresh-btn:hover {
+            transform: rotate(180deg);
+            background: #ffed4e;
+        }
+
+        .timestamp {
+            text-align: center;
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            color: #FFD700;
+            font-size: 1.2rem;
+            padding: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏀 Panel Admin - Basket Impostor</h1>
+
+        <div id="loading" class="loading">Cargando estadísticas...</div>
+
+        <div id="statsContainer" style="display: none;">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Partidas Totales</h3>
+                    <div class="value" id="totalGames">0</div>
+                    <div class="label">Creadas desde el inicio</div>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Jugadores Totales</h3>
+                    <div class="value" id="totalPlayers">0</div>
+                    <div class="label">Se han unido a partidas</div>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Rondas Totales</h3>
+                    <div class="value" id="totalRounds">0</div>
+                    <div class="label">Partidas iniciadas</div>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Clicks Publicidad</h3>
+                    <div class="value" id="totalClicksPubli">0</div>
+                    <div class="label">Total en publi</div>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Partidas Activas</h3>
+                    <div class="value" id="activeGames">0</div>
+                    <div class="label">En este momento</div>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Jugadores Activos</h3>
+                    <div class="value" id="activePlayers">0</div>
+                    <div class="label">En este momento</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📊 Clicks en Publicidad</h2>
+                <div class="theme-stats">
+                    <div class="theme-item">
+                        <strong>Banner Footer</strong>
+                        <span id="clicksBanner">0</span>
+                    </div>
+                    <div class="theme-item">
+                        <strong>Intersticial</strong>
+                        <span id="clicksInterstitial">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🎯 Partidas por Tema</h2>
+                <div class="theme-stats">
+                    <div class="theme-item">
+                        <strong>Para viejos rockeros...</strong>
+                        <span id="themeLeyendas">0</span>
+                    </div>
+                    <div class="theme-item">
+                        <strong>Luka, Anteto... actualidad</strong>
+                        <span id="themeActual">0</span>
+                    </div>
+                    <div class="theme-item">
+                        <strong>Cosas de baloncesto</strong>
+                        <span id="themeCancha">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>⚙️ Acciones</h2>
+                <button class="button danger" onclick="resetStats()">Resetear Estadísticas</button>
+                <div class="timestamp" id="lastUpdate"></div>
+            </div>
+        </div>
+    </div>
+
+    <button class="refresh-btn" onclick="loadStats()" title="Actualizar">🔄</button>
+
+    <script>
+        function loadStats() {
+            fetch('/api/stats')
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('statsContainer').style.display = 'block';
+
+                    // Estadísticas generales
+                    document.getElementById('totalGames').textContent = data.totalGames || 0;
+                    document.getElementById('totalPlayers').textContent = data.totalPlayers || 0;
+                    document.getElementById('totalRounds').textContent = data.totalRounds || 0;
+                    document.getElementById('totalClicksPubli').textContent = data.totalClicksPubli || 0;
+                    document.getElementById('activeGames').textContent = data.activeGames || 0;
+                    document.getElementById('activePlayers').textContent = data.activePlayers || 0;
+
+                    // Clicks publicidad
+                    document.getElementById('clicksBanner').textContent = data.clicksPubliBanner || 0;
+                    document.getElementById('clicksInterstitial').textContent = data.clicksPubliInterstitial || 0;
+
+                    // Temas
+                    document.getElementById('themeLeyendas').textContent = data.gamesByTheme?.leyendas || 0;
+                    document.getElementById('themeActual').textContent = data.gamesByTheme?.actual || 0;
+                    document.getElementById('themeCancha').textContent = data.gamesByTheme?.cancha || 0;
+
+                    // Timestamp
+                    const date = new Date(data.timestamp || Date.now());
+                    document.getElementById('lastUpdate').textContent = 
+                        `Última actualización: ${date.toLocaleString('es-ES')}`;
+                })
+                .catch(err => {
+                    console.error('Error cargando estadísticas:', err);
+                    document.getElementById('loading').textContent = 'Error cargando estadísticas';
+                });
+        }
+
+        function resetStats() {
+            if (!confirm('¿Estás seguro de que quieres resetear todas las estadísticas? Esta acción no se puede deshacer.')) {
+                return;
+            }
+
+            fetch('/api/stats/reset', { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Estadísticas reseteadas correctamente');
+                        loadStats();
+                    }
+                })
+                .catch(err => {
+                    console.error('Error reseteando estadísticas:', err);
+                    alert('Error al resetear estadísticas');
+                });
+        }
+
+        // Cargar estadísticas al iniciar
+        loadStats();
+
+        // Auto-refresh cada 30 segundos
+        setInterval(loadStats, 30000);
+    </script>
+</body>
+</html>
+

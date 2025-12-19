@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const server = http.createServer(app);
@@ -21,8 +22,49 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 // Servir archivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Middleware para parsear JSON
+app.use(express.json());
+
 // Almacenamiento en memoria de las partidas
 const games = {};
+
+// Sistema de estadísticas
+const statsFile = path.join(__dirname, 'stats.json');
+
+// Cargar estadísticas desde archivo
+let stats = {
+  totalGames: 0,
+  totalPlayers: 0,
+  totalRounds: 0,
+  totalClicksPubli: 0,
+  clicksPubliBanner: 0,
+  clicksPubliInterstitial: 0,
+  gamesByTheme: {
+    leyendas: 0,
+    actual: 0,
+    cancha: 0
+  },
+  lastReset: new Date().toISOString()
+};
+
+// Cargar estadísticas si el archivo existe
+if (fs.existsSync(statsFile)) {
+  try {
+    const savedStats = JSON.parse(fs.readFileSync(statsFile, 'utf8'));
+    stats = { ...stats, ...savedStats };
+  } catch (err) {
+    console.log('Error cargando estadísticas, usando valores por defecto');
+  }
+}
+
+// Función para guardar estadísticas
+function saveStats() {
+  try {
+    fs.writeFileSync(statsFile, JSON.stringify(stats, null, 2));
+  } catch (err) {
+    console.error('Error guardando estadísticas:', err);
+  }
+}
 
 // Generar código de sala aleatorio (4 caracteres alfanuméricos)
 function generateRoomCode() {
@@ -79,6 +121,10 @@ io.on('connection', (socket) => {
     socket.emit('gameCreated', { roomCode, isHost: true });
     socket.emit('updatePlayerList', game.players);
     
+    // Estadísticas
+    stats.totalGames++;
+    saveStats();
+    
     console.log(`Partida creada: ${roomCode} por ${socket.id}`);
   });
 
@@ -119,6 +165,10 @@ io.on('connection', (socket) => {
     // Notificar a todos los jugadores de la actualización
     io.to(roomCode).emit('updatePlayerList', games[roomCode].players);
     
+    // Estadísticas
+    stats.totalPlayers++;
+    saveStats();
+    
     console.log(`${socket.id} se unió a la sala ${roomCode}`);
   });
 
@@ -139,6 +189,12 @@ io.on('connection', (socket) => {
 
     game.selectedGroup = groupKey;
     game.lastActivity = Date.now();
+    
+    // Estadísticas
+    if (stats.gamesByTheme[groupKey] !== undefined) {
+      stats.gamesByTheme[groupKey]++;
+      saveStats();
+    }
     
     // Notificar a todos los jugadores
     io.to(roomCode).emit('groupSelected', { groupKey, groupName: locationGroups[groupKey].name });
@@ -201,6 +257,11 @@ io.on('connection', (socket) => {
     });
 
     io.to(roomCode).emit('gameStateChanged', { status: 'PLAYING' });
+    
+    // Estadísticas
+    stats.totalRounds++;
+    saveStats();
+    
     console.log(`Partida iniciada en sala ${roomCode}`);
   });
 
@@ -260,6 +321,61 @@ io.on('connection', (socket) => {
       }
     });
   });
+});
+
+// API para tracking de clicks en publicidad
+app.post('/api/track', (req, res) => {
+  const { type } = req.body; // 'banner' o 'interstitial'
+  
+  if (type === 'banner') {
+    stats.totalClicksPubli++;
+    stats.clicksPubliBanner++;
+  } else if (type === 'interstitial') {
+    stats.totalClicksPubli++;
+    stats.clicksPubliInterstitial++;
+  }
+  
+  saveStats();
+  res.json({ success: true });
+});
+
+// Panel de Admin
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
+
+// API para obtener estadísticas
+app.get('/api/stats', (req, res) => {
+  // Estadísticas en tiempo real
+  const activeGames = Object.keys(games).length;
+  const activePlayers = Object.values(games).reduce((sum, game) => sum + game.players.length, 0);
+  
+  res.json({
+    ...stats,
+    activeGames,
+    activePlayers,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// API para resetear estadísticas
+app.post('/api/stats/reset', (req, res) => {
+  stats = {
+    totalGames: 0,
+    totalPlayers: 0,
+    totalRounds: 0,
+    totalClicksPubli: 0,
+    clicksPubliBanner: 0,
+    clicksPubliInterstitial: 0,
+    gamesByTheme: {
+      leyendas: 0,
+      actual: 0,
+      cancha: 0
+    },
+    lastReset: new Date().toISOString()
+  };
+  saveStats();
+  res.json({ success: true, message: 'Estadísticas reseteadas' });
 });
 
 server.listen(PORT, () => {

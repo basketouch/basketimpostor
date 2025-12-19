@@ -305,6 +305,17 @@ socket.on('gameStarted', ({ isImpostor: impostor, location }) => {
     showScreen(gameScreen);
 });
 
+// Función para trackear clicks en publicidad
+function trackClick(type) {
+    fetch('/api/track', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ type })
+    }).catch(err => console.error('Error tracking click:', err));
+}
+
 socket.on('gameStateChanged', ({ status }) => {
     if (status === 'LOBBY') {
         showScreen(lobbyScreen);
