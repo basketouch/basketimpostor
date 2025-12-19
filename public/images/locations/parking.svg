@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" style="background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);">
+  <defs>
+    <style>
+      .road { fill: #4a5568; }
+      .line { stroke: #ffd700; stroke-width: 2; stroke-dasharray: 5,5; }
+      .car { fill: #ff6b35; }
+      .space { fill: #718096; stroke: #4a5568; stroke-width: 2; }
+      .text { fill: #fff; font-family: Arial, sans-serif; font-size: 24px; font-weight: bold; }
+    </style>
+  </defs>
+  
+  <!-- Carretera -->
+  <rect class="road" x="0" y="140" width="400" height="60"/>
+  <line class="line" x1="0" y1="170" x2="400" y2="170"/>
+  
+  <!-- Espacios de aparcamiento -->
+  <rect class="space" x="50" y="50" width="60" height="80" rx="3"/>
+  <rect class="space" x="130" y="50" width="60" height="80" rx="3"/>
+  <rect class="space" x="210" y="50" width="60" height="80" rx="3"/>
+  <rect class="space" x="290" y="50" width="60" height="80" rx="3"/>
+  
+  <rect class="space" x="50" y="210" width="60" height="80" rx="3"/>
+  <rect class="space" x="130" y="210" width="60" height="80" rx="3"/>
+  <rect class="space" x="210" y="210" width="60" height="80" rx="3"/>
+  <rect class="space" x="290" y="210" width="60" height="80" rx="3"/>
+  
+  <!-- Coches -->
+  <rect class="car" x="60" y="60" width="40" height="20" rx="3"/>
+  <circle cx="70" cy="80" r="5" fill="#1a202c"/>
+  <circle cx="90" cy="80" r="5" fill="#1a202c"/>
+  
+  <rect class="car" x="220" y="60" width="40" height="20" rx="3"/>
+  <circle cx="230" cy="80" r="5" fill="#1a202c"/>
+  <circle cx="250" cy="80" r="5" fill="#1a202c"/>
+  
+  <rect class="car" x="140" y="220" width="40" height="20" rx="3"/>
+  <circle cx="150" cy="240" r="5" fill="#1a202c"/>
+  <circle cx="170" cy="240" r="5" fill="#1a202c"/>
+  
+  <!-- Texto -->
+  <text class="text" x="200" y="290" text-anchor="middle">Parking</text>
+</svg>
+

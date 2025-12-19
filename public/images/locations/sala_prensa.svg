@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
+  <defs>
+    <style>
+      .table { fill: #8b7355; stroke: #654321; stroke-width: 2; }
+      .mic { fill: #4a5568; }
+      .camera { fill: #2d3748; }
+      .laptop { fill: #1a202c; }
+      .text { fill: #2d3748; font-family: Arial, sans-serif; font-size: 24px; font-weight: bold; }
+    </style>
+  </defs>
+  
+  <!-- Mesa -->
+  <rect class="table" x="80" y="150" width="240" height="80" rx="5"/>
+  
+  <!-- Micrófonos -->
+  <rect class="mic" x="120" y="140" width="8" height="20" rx="2"/>
+  <circle class="mic" cx="124" cy="140" r="6"/>
+  <rect class="mic" x="200" y="140" width="8" height="20" rx="2"/>
+  <circle class="mic" cx="204" cy="140" r="6"/>
+  <rect class="mic" x="280" y="140" width="8" height="20" rx="2"/>
+  <circle class="mic" cx="284" cy="140" r="6"/>
+  
+  <!-- Laptops -->
+  <rect class="laptop" x="140" y="160" width="40" height="25" rx="2"/>
+  <rect class="laptop" x="220" y="160" width="40" height="25" rx="2"/>
+  
+  <!-- Cámaras -->
+  <rect class="camera" x="100" y="100" width="30" height="20" rx="3"/>
+  <circle class="camera" cx="115" cy="110" r="8" fill="#1a202c"/>
+  <rect class="camera" x="270" y="100" width="30" height="20" rx="3"/>
+  <circle class="camera" cx="285" cy="110" r="8" fill="#1a202c"/>
+  
+  <!-- Sillas -->
+  <rect x="100" y="230" width="30" height="40" fill="#8b7355" stroke="#654321" stroke-width="2" rx="3"/>
+  <rect x="270" y="230" width="30" height="40" fill="#8b7355" stroke="#654321" stroke-width="2" rx="3"/>
+  
+  <!-- Texto -->
+  <text class="text" x="200" y="290" text-anchor="middle">Sala de Prensa</text>
+</svg>
+

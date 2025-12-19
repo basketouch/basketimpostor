@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);">
+  <defs>
+    <style>
+      .shelf { fill: #8b7355; stroke: #654321; stroke-width: 2; }
+      .jersey { fill: #ff6b35; stroke: #fff; stroke-width: 1; }
+      .ball { fill: #ffd700; stroke: #333; stroke-width: 2; }
+      .text { fill: #8b4513; font-family: Arial, sans-serif; font-size: 24px; font-weight: bold; }
+    </style>
+  </defs>
+  
+  <!-- Estanterías -->
+  <rect class="shelf" x="60" y="80" width="280" height="15"/>
+  <rect class="shelf" x="60" y="140" width="280" height="15"/>
+  <rect class="shelf" x="60" y="200" width="280" height="15"/>
+  
+  <!-- Camisetas colgadas -->
+  <rect class="jersey" x="80" y="60" width="35" height="45" rx="3"/>
+  <rect class="jersey" x="130" y="60" width="35" height="45" rx="3"/>
+  <rect class="jersey" x="180" y="60" width="35" height="45" rx="3"/>
+  <rect class="jersey" x="230" y="60" width="35" height="45" rx="3"/>
+  <rect class="jersey" x="280" y="60" width="35" height="45" rx="3"/>
+  
+  <!-- Pelotas en estantería -->
+  <circle class="ball" cx="100" cy="155" r="12"/>
+  <circle class="ball" cx="200" cy="155" r="12"/>
+  <circle class="ball" cx="300" cy="155" r="12"/>
+  
+  <!-- Gorras -->
+  <ellipse cx="100" cy="215" rx="15" ry="8" fill="#1a202c"/>
+  <ellipse cx="200" cy="215" rx="15" ry="8" fill="#1a202c"/>
+  <ellipse cx="300" cy="215" rx="15" ry="8" fill="#1a202c"/>
+  
+  <!-- Texto -->
+  <text class="text" x="200" y="280" text-anchor="middle">Tienda de Merchandising</text>
+</svg>
+

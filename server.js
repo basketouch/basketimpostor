@@ -1,0 +1,259 @@
+const express = require('express');
+const http = require('http');
+const socketIo = require('socket.io');
+const path = require('path');
+
+const app = express();
+const server = http.createServer(app);
+
+// Configuración de Socket.io para producción
+const io = socketIo(server, {
+  cors: {
+    origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : '*',
+    methods: ['GET', 'POST']
+  },
+  transports: ['websocket', 'polling']
+});
+
+const PORT = process.env.PORT || 3000;
+const NODE_ENV = process.env.NODE_ENV || 'development';
+
+// Servir archivos estáticos
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Almacenamiento en memoria de las partidas
+const games = {};
+
+// Generar código de sala aleatorio (4 caracteres alfanuméricos)
+function generateRoomCode() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let code = '';
+  for (let i = 0; i < 4; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return code;
+}
+
+// Garbage Collection: Eliminar salas inactivas (más de 2 horas)
+setInterval(() => {
+  const now = Date.now();
+  const twoHours = 2 * 60 * 60 * 1000;
+  
+  Object.keys(games).forEach(roomCode => {
+    if (games[roomCode].lastActivity && (now - games[roomCode].lastActivity > twoHours)) {
+      console.log(`Eliminando sala inactiva: ${roomCode}`);
+      delete games[roomCode];
+    }
+  });
+}, 60 * 60 * 1000); // Ejecutar cada hora
+
+// Socket.io - Gestión de conexiones
+io.on('connection', (socket) => {
+  console.log('Usuario conectado:', socket.id);
+
+  // Crear nueva partida
+  socket.on('createGame', (playerName) => {
+    let roomCode = generateRoomCode();
+    // Asegurar que el código no existe
+    while (games[roomCode]) {
+      roomCode = generateRoomCode();
+    }
+
+    const game = {
+      hostId: socket.id,
+      status: 'LOBBY',
+      currentLocation: null,
+      impostorId: null,
+      selectedGroup: null, // Grupo seleccionado (leyendas, actual, cancha)
+      players: [{
+        id: socket.id,
+        name: playerName || 'Jugador',
+        avatar: ''
+      }],
+      lastActivity: Date.now()
+    };
+
+    games[roomCode] = game;
+    socket.join(roomCode);
+    socket.emit('gameCreated', { roomCode, isHost: true });
+    socket.emit('updatePlayerList', game.players);
+    
+    console.log(`Partida creada: ${roomCode} por ${socket.id}`);
+  });
+
+  // Unirse a partida existente
+  socket.on('joinGame', ({ roomCode, playerName }) => {
+    console.log(`Intento de unión a sala ${roomCode} por ${socket.id}`);
+    console.log('Salas activas:', Object.keys(games));
+    
+    if (!games[roomCode]) {
+      console.log(`Sala ${roomCode} no encontrada. Salas disponibles:`, Object.keys(games));
+      socket.emit('joinError', { message: 'Sala no encontrada' });
+      return;
+    }
+
+    if (games[roomCode].status !== 'LOBBY') {
+      socket.emit('joinError', { message: 'La partida ya ha comenzado' });
+      return;
+    }
+
+    // Verificar si el jugador ya está en la sala
+    const existingPlayer = games[roomCode].players.find(p => p.id === socket.id);
+    if (existingPlayer) {
+      socket.emit('gameJoined', { roomCode, isHost: socket.id === games[roomCode].hostId });
+      socket.emit('updatePlayerList', games[roomCode].players);
+      return;
+    }
+
+    games[roomCode].players.push({
+      id: socket.id,
+      name: playerName || 'Jugador',
+      avatar: ''
+    });
+
+    games[roomCode].lastActivity = Date.now();
+    socket.join(roomCode);
+    socket.emit('gameJoined', { roomCode, isHost: socket.id === games[roomCode].hostId });
+    
+    // Notificar a todos los jugadores de la actualización
+    io.to(roomCode).emit('updatePlayerList', games[roomCode].players);
+    
+    console.log(`${socket.id} se unió a la sala ${roomCode}`);
+  });
+
+  // Seleccionar grupo de localizaciones (solo el host)
+  socket.on('selectGroup', ({ roomCode, groupKey }) => {
+    const game = games[roomCode];
+    
+    if (!game || game.hostId !== socket.id) {
+      socket.emit('error', { message: 'No tienes permisos' });
+      return;
+    }
+
+    const locationGroups = require('./locations.js');
+    if (!locationGroups[groupKey]) {
+      socket.emit('error', { message: 'Grupo no válido' });
+      return;
+    }
+
+    game.selectedGroup = groupKey;
+    game.lastActivity = Date.now();
+    
+    // Notificar a todos los jugadores
+    io.to(roomCode).emit('groupSelected', { groupKey, groupName: locationGroups[groupKey].name });
+    console.log(`Grupo seleccionado en sala ${roomCode}: ${groupKey}`);
+  });
+
+  // Iniciar partida (solo el host)
+  socket.on('startGame', ({ roomCode }) => {
+    const game = games[roomCode];
+    
+    if (!game || game.hostId !== socket.id) {
+      socket.emit('error', { message: 'No tienes permisos para iniciar la partida' });
+      return;
+    }
+
+    if (game.players.length < 2) {
+      socket.emit('error', { message: 'Se necesitan al menos 2 jugadores' });
+      return;
+    }
+
+    if (!game.selectedGroup) {
+      socket.emit('error', { message: 'Debes seleccionar un grupo primero' });
+      return;
+    }
+
+    // Cargar grupos de localizaciones
+    const locationGroups = require('./locations.js');
+    const locations = locationGroups[game.selectedGroup].locations;
+    
+    // Seleccionar localización aleatoria del grupo seleccionado
+    const randomLocation = locations[Math.floor(Math.random() * locations.length)];
+    game.currentLocation = randomLocation.id;
+    
+    // Seleccionar impostor aleatorio
+    const randomPlayerIndex = Math.floor(Math.random() * game.players.length);
+    game.impostorId = game.players[randomPlayerIndex].id;
+    
+    game.status = 'PLAYING';
+    game.lastActivity = Date.now();
+
+    // Enviar información a cada jugador según su rol
+    game.players.forEach(player => {
+      const isImpostor = player.id === game.impostorId;
+      io.to(player.id).emit('gameStarted', {
+        isImpostor,
+        location: isImpostor ? null : randomLocation
+      });
+    });
+
+    io.to(roomCode).emit('gameStateChanged', { status: 'PLAYING' });
+    console.log(`Partida iniciada en sala ${roomCode}`);
+  });
+
+  // Finalizar ronda / Volver al lobby
+  socket.on('endRound', ({ roomCode }) => {
+    const game = games[roomCode];
+    
+    if (!game || game.hostId !== socket.id) {
+      socket.emit('error', { message: 'No tienes permisos' });
+      return;
+    }
+
+    game.status = 'LOBBY';
+    game.currentLocation = null;
+    game.impostorId = null;
+    game.lastActivity = Date.now();
+
+    io.to(roomCode).emit('gameStateChanged', { status: 'LOBBY' });
+    io.to(roomCode).emit('updatePlayerList', game.players);
+    console.log(`Ronda finalizada en sala ${roomCode}`);
+  });
+
+  // Manejo de desconexión
+  socket.on('disconnect', () => {
+    console.log('Usuario desconectado:', socket.id);
+    
+    // Buscar y eliminar jugador de todas las salas
+    Object.keys(games).forEach(roomCode => {
+      const game = games[roomCode];
+      const playerIndex = game.players.findIndex(p => p.id === socket.id);
+      
+      if (playerIndex !== -1) {
+        game.players.splice(playerIndex, 1);
+        game.lastActivity = Date.now();
+        
+        // Si era el host, asignar nuevo host o eliminar sala si no hay jugadores
+        if (game.hostId === socket.id) {
+          if (game.players.length > 0) {
+            game.hostId = game.players[0].id;
+          } else {
+            delete games[roomCode];
+            console.log(`Sala ${roomCode} eliminada (sin jugadores)`);
+            return;
+          }
+        }
+        
+        // Si la sala quedó vacía, eliminarla
+        if (game.players.length === 0) {
+          delete games[roomCode];
+          console.log(`Sala ${roomCode} eliminada (sin jugadores)`);
+          return;
+        }
+        
+        // Notificar a los demás jugadores
+        io.to(roomCode).emit('updatePlayerList', game.players);
+        io.to(roomCode).emit('hostChanged', { newHostId: game.hostId });
+      }
+    });
+  });
+});
+
+server.listen(PORT, () => {
+  console.log(`Servidor corriendo en puerto ${PORT}`);
+  console.log(`Entorno: ${NODE_ENV}`);
+  if (NODE_ENV === 'production') {
+    console.log('Modo producción activado');
+  }
+});
+

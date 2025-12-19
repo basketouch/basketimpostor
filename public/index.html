@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basket Impostor</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <!-- Banner Publicitario Sticky (Footer) -->
+    <div id="adBanner" class="ad-banner">
+        <!-- 
+            INSTRUCCIONES PARA ADSENSE:
+            1. Reemplaza este div completo con tu código de AdSense
+            2. Formato recomendado: Banner horizontal (320x100 o 728x90)
+            3. Ejemplo:
+            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXX"
+                 crossorigin="anonymous"></script>
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-XXXXXXXXXX"
+                 data-ad-slot="XXXXXXXXXX"
+                 data-ad-format="auto"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        -->
+        <div class="ad-placeholder">
+            <p>Publicidad</p>
+        </div>
+    </div>
+
+    <!-- Pantalla 1: Home -->
+    <div id="homeScreen" class="screen active">
+        <div class="container">
+            <h1>🏀 Basket Impostor</h1>
+            <p class="subtitle">Encuentra al impostor en la cancha</p>
+            
+            <div class="input-group">
+                <label for="playerName">Tu Nombre:</label>
+                <input type="text" id="playerName" placeholder="Escribe tu nombre" maxlength="20">
+            </div>
+
+            <div class="button-group">
+                <button id="createGameBtn" class="btn btn-primary">Crear Partida</button>
+            </div>
+
+            <div class="divider">
+                <span>O</span>
+            </div>
+
+            <div class="input-group">
+                <label for="roomCode">Código de Sala:</label>
+                <input type="text" id="roomCode" placeholder="ABCD" maxlength="4" style="text-transform: uppercase;">
+            </div>
+
+            <div class="button-group">
+                <button id="joinGameBtn" class="btn btn-secondary">Unirse</button>
+            </div>
+
+            <div id="errorMessage" class="error-message"></div>
+        </div>
+    </div>
+
+    <!-- Pantalla 2: Lobby -->
+    <div id="lobbyScreen" class="screen">
+        <div class="container">
+            <h2>Sala de Espera</h2>
+            
+            <div class="room-code-display">
+                <p class="label">Código de Sala:</p>
+                <h1 id="displayRoomCode">----</h1>
+                <button id="copyCodeBtn" class="btn-small">Copiar</button>
+            </div>
+
+            <div class="players-list">
+                <h3>Jugadores (<span id="playerCount">0</span>)</h3>
+                <ul id="playersList"></ul>
+            </div>
+
+            <!-- Selección de Grupo (solo para host) -->
+            <div id="groupSelection" class="group-selection" style="display: none;">
+                <h3>Elige el Grupo de Localizaciones:</h3>
+                <div class="group-buttons">
+                    <button class="group-btn" data-group="leyendas">
+                        <strong>Leyendas y Nostalgia</strong>
+                        <span>Nivel: Cultura General</span>
+                    </button>
+                    <button class="group-btn" data-group="actual">
+                        <strong>Baloncesto Actual</strong>
+                        <span>Nivel: Lo que sale en el Telediario</span>
+                    </button>
+                    <button class="group-btn" data-group="cancha">
+                        <strong>Elementos de la Cancha</strong>
+                        <span>Nivel: Cosas Físicas</span>
+                    </button>
+                </div>
+                <div id="selectedGroupDisplay" class="selected-group-display" style="display: none;">
+                    <p>Grupo seleccionado: <strong id="selectedGroupName"></strong></p>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button id="startGameBtn" class="btn btn-primary" style="display: none;">Empezar Partida</button>
+                <button id="leaveLobbyBtn" class="btn btn-secondary">Salir</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pantalla 3: Juego -->
+    <div id="gameScreen" class="screen">
+        <div class="container">
+            <h2>¡Encuentra al Impostor!</h2>
+            
+            <div id="playerView" class="game-content">
+                <!-- Vista para jugador normal -->
+                <div id="normalPlayerView" style="display: none;">
+                    <div class="location-word-container">
+                        <div id="locationName" class="location-word"></div>
+                    </div>
+                    <p class="instruction">Haz preguntas para encontrar al impostor</p>
+                </div>
+
+                <!-- Vista para impostor -->
+                <div id="impostorView" style="display: none;">
+                    <div class="impostor-message">
+                        <h3>⚠️ ERES EL IMPOSTOR</h3>
+                        <p>Disimula y haz preguntas genéricas para no ser descubierto</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button id="endRoundBtn" class="btn btn-primary" style="display: none;">Finalizar Ronda</button>
+                <button id="backToLobbyBtn" class="btn btn-secondary">Volver al Lobby</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Publicidad Intersticial -->
+    <div id="adInterstitial" class="ad-interstitial" style="display: none;">
+        <div class="interstitial-content">
+            <h3>Nueva Ronda en...</h3>
+            <div id="countdown" class="countdown">5</div>
+            <div class="ad-container">
+                <!-- 
+                    INSTRUCCIONES PARA ADSENSE INTERSTICIAL:
+                    1. Reemplaza este div con tu código de AdSense intersticial
+                    2. Formato recomendado: Intersticial (320x480 o 300x600)
+                    3. Ejemplo:
+                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXX"
+                         crossorigin="anonymous"></script>
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-XXXXXXXXXX"
+                         data-ad-slot="XXXXXXXXXX"
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                -->
+                <div class="ad-placeholder-large">
+                    <p>Publicidad Intersticial</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
+

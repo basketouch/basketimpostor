@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+  <defs>
+    <style>
+      .stand { fill: #4a5568; stroke: #2d3748; stroke-width: 2; }
+      .person { fill: #ff6b35; }
+      .text { fill: #fff; font-family: Arial, sans-serif; font-size: 24px; font-weight: bold; }
+    </style>
+  </defs>
+  
+  <!-- Gradas -->
+  <rect class="stand" x="50" y="100" width="300" height="150" rx="5"/>
+  <rect class="stand" x="60" y="110" width="280" height="20" fill="#718096"/>
+  <rect class="stand" x="60" y="140" width="280" height="20" fill="#718096"/>
+  <rect class="stand" x="60" y="170" width="280" height="20" fill="#718096"/>
+  <rect class="stand" x="60" y="200" width="280" height="20" fill="#718096"/>
+  
+  <!-- Personas en las gradas -->
+  <circle class="person" cx="100" cy="120" r="8"/>
+  <circle class="person" cx="150" cy="120" r="8"/>
+  <circle class="person" cx="200" cy="120" r="8"/>
+  <circle class="person" cx="250" cy="120" r="8"/>
+  <circle class="person" cx="300" cy="120" r="8"/>
+  
+  <circle class="person" cx="100" cy="150" r="8"/>
+  <circle class="person" cx="150" cy="150" r="8"/>
+  <circle class="person" cx="200" cy="150" r="8"/>
+  <circle class="person" cx="250" cy="150" r="8"/>
+  <circle class="person" cx="300" cy="150" r="8"/>
+  
+  <!-- Cancha vista desde arriba -->
+  <rect x="100" y="50" width="200" height="40" fill="#ff6b35" stroke="#fff" stroke-width="2" rx="5"/>
+  
+  <!-- Texto -->
+  <text class="text" x="200" y="280" text-anchor="middle">Gradas</text>
+</svg>
+
