@@ -179,14 +179,16 @@
 
     <!-- Modal de Publicidad Intersticial -->
     <div id="adInterstitial" class="ad-interstitial" style="display: none;">
-        <div class="interstitial-content">
-            <h3>Nueva Ronda en...</h3>
-            <div id="countdown" class="countdown">5</div>
-            <div class="ad-container">
+        <div class="interstitial-overlay">
+            <div class="interstitial-header">
+                <div id="countdown" class="countdown">5</div>
+                <p class="countdown-text">Nueva Ronda en...</p>
+            </div>
+            <div class="ad-container-fullscreen">
                 <!-- 
                     INSTRUCCIONES PARA ADSENSE INTERSTICIAL:
                     1. Reemplaza este div con tu código de AdSense intersticial
-                    2. Formato recomendado: Intersticial (320x480 o 300x600)
+                    2. Formato recomendado: Intersticial Full Screen (320x480 o 300x600)
                     3. Ejemplo:
                     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXX"
                          crossorigin="anonymous"></script>
@@ -202,6 +204,7 @@
                 -->
                 <div class="ad-placeholder-large">
                     <p>Publicidad Intersticial</p>
+                    <p class="ad-placeholder-subtitle">Pantalla Completa</p>
                 </div>
             </div>
         </div>
