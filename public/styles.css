@@ -114,7 +114,7 @@ body {
 
 .instructions-text {
     color: var(--primary);
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     line-height: 2;
     margin: 0;
     text-align: left;
@@ -123,7 +123,7 @@ body {
 .instructions-text strong {
     color: var(--primary);
     font-weight: 700;
-    font-size: 1.15rem;
+    font-size: 1rem;
 }
 
 /* Pantallas */
@@ -730,12 +730,12 @@ h3 {
     }
 
     .instructions-text {
-        font-size: 1rem;
+        font-size: 0.85rem;
         line-height: 1.8;
     }
 
     .instructions-text strong {
-        font-size: 1.05rem;
+        font-size: 0.9rem;
     }
 }
 
