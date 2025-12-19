@@ -83,3 +83,6 @@ npm run dev
 - 📱 La aplicación está optimizada para móviles (mobile-first)
 - 🔌 Requiere WebSockets (Socket.io) - verifica que tu hosting lo soporte
 
+
+
+

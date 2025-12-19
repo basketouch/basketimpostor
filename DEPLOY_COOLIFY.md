@@ -211,3 +211,6 @@ Coolify detectará automáticamente que es Node.js y usará:
 
 Si tienes algún problema, los logs en Coolify te dirán exactamente qué está pasando.
 
+
+
+

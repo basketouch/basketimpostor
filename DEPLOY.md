@@ -201,3 +201,6 @@ Considera añadir:
 - El garbage collection limpia salas inactivas cada hora
 - Monitorea el uso de memoria si tienes muchas partidas simultáneas
 
+
+
+
