@@ -47,6 +47,8 @@ const groupSelection = document.getElementById('groupSelection');
 const selectedGroupDisplay = document.getElementById('selectedGroupDisplay');
 const selectedGroupName = document.getElementById('selectedGroupName');
 const groupButtons = document.querySelectorAll('.group-btn');
+const instructionsToggle = document.getElementById('instructionsToggle');
+const instructionsContent = document.getElementById('instructionsContent');
 
 // Funciones de utilidad
 function showScreen(screen) {
@@ -118,6 +120,18 @@ copyCodeBtn.addEventListener('click', () => {
             copyCodeBtn.textContent = 'Copiar';
         }, 2000);
     });
+});
+
+// Toggle de instrucciones
+instructionsToggle.addEventListener('click', () => {
+    const isActive = instructionsToggle.classList.contains('active');
+    if (isActive) {
+        instructionsToggle.classList.remove('active');
+        instructionsContent.style.display = 'none';
+    } else {
+        instructionsToggle.classList.add('active');
+        instructionsContent.style.display = 'block';
+    }
 });
 
 // Selección de grupo

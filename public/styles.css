@@ -44,31 +44,78 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Contenedor de Instrucciones */
+/* Contenedor de Instrucciones Desplegable */
 .instructions-container {
     max-width: 500px;
     margin: 0 auto 20px;
     padding: 0;
 }
 
-.instructions-content {
+.instructions-toggle {
+    width: 100%;
     background: rgba(0, 0, 0, 0.8);
+    border: 2px solid var(--primary);
     border-radius: 15px;
-    padding: 20px;
-    border: 1px solid rgba(255, 215, 0, 0.3);
+    padding: 15px 20px;
+    color: var(--primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s;
 }
 
-.instructions-title {
+.instructions-toggle:hover {
+    background: rgba(0, 0, 0, 0.9);
+    border-color: #ffed4e;
+}
+
+.instructions-toggle.active {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom: none;
+}
+
+.instructions-toggle-text {
     color: var(--primary);
-    text-align: center;
-    margin-bottom: 15px;
-    font-size: 1.3rem;
+}
+
+.instructions-toggle-icon {
+    color: var(--primary);
+    font-size: 0.9rem;
+    transition: transform 0.3s;
+}
+
+.instructions-toggle.active .instructions-toggle-icon {
+    transform: rotate(180deg);
+}
+
+.instructions-content {
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 0 0 15px 15px;
+    padding: 20px;
+    border: 2px solid var(--primary);
+    border-top: none;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        max-height: 500px;
+    }
 }
 
 .instructions-text {
     color: var(--primary);
-    font-size: 0.9rem;
-    line-height: 1.8;
+    font-size: 1.1rem;
+    line-height: 2;
     margin: 0;
     text-align: left;
 }
@@ -76,6 +123,7 @@ body {
 .instructions-text strong {
     color: var(--primary);
     font-weight: 700;
+    font-size: 1.15rem;
 }
 
 /* Pantallas */
@@ -672,17 +720,22 @@ h3 {
         font-size: 0.8rem;
     }
 
+    .instructions-toggle {
+        padding: 12px 15px;
+        font-size: 1rem;
+    }
+
     .instructions-content {
         padding: 15px;
     }
 
-    .instructions-title {
-        font-size: 1.1rem;
+    .instructions-text {
+        font-size: 1rem;
+        line-height: 1.8;
     }
 
-    .instructions-text {
-        font-size: 0.8rem;
-        line-height: 1.6;
+    .instructions-text strong {
+        font-size: 1.05rem;
     }
 }
 

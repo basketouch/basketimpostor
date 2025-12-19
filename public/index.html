@@ -83,18 +83,20 @@
             <div id="errorMessage" class="error-message"></div>
         </div>
         
-        <!-- Contenedor de Instrucciones -->
+        <!-- Contenedor de Instrucciones Desplegable -->
         <div class="instructions-container">
-            <div class="instructions-content">
-                <h3 class="instructions-title">📖 Cómo Jugar</h3>
+            <button class="instructions-toggle" id="instructionsToggle">
+                <span class="instructions-toggle-text">📖 Cómo Jugar</span>
+                <span class="instructions-toggle-icon">▼</span>
+            </button>
+            <div class="instructions-content" id="instructionsContent" style="display: none;">
                 <p class="instructions-text">
                     <strong>1. Crea o únete a una partida</strong> con un código de 4 letras<br>
-                    <strong>2. Elige un grupo de localizaciones</strong> (solo el host puede elegir)<br>
+                    <strong>2. Elige un tema</strong><br>
                     <strong>3. Cuando haya 2+ jugadores, inicia la partida</strong><br>
-                    <strong>4. Los jugadores normales ven la localización</strong> en letras grandes<br>
-                    <strong>5. El impostor NO ve la localización</strong> y debe disimular<br>
-                    <strong>6. Haz preguntas para encontrar al impostor</strong> o disimula si eres el impostor<br>
-                    <strong>7. El host puede finalizar la ronda</strong> cuando quieras empezar de nuevo
+                    <strong>4. Los jugadores normales ven el tema</strong> el impostor NO, debe disimular<br>
+                    <strong>5. Haz preguntas para encontrar al impostor</strong> o disimula si eres el impostor<br>
+                    <strong>6. Haz las vueltas que sean necesarias</strong> para encontrar al IMPOSTOR
                 </p>
             </div>
         </div>
