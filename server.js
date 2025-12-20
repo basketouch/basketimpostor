@@ -160,9 +160,9 @@ io.on('connection', (socket) => {
       return;
     }
     
-    // Verificar si la sala está marcada para eliminación
+    // Verificar si la sala está marcada para eliminación y cancelarla
     if (games[normalizedRoomCode].markedForDeletion) {
-      console.log(`[JOIN] Sala ${normalizedRoomCode} está marcada para eliminación, cancelando...`);
+      console.log(`[JOIN] Sala ${normalizedRoomCode} estaba marcada para eliminación, cancelando...`);
       games[normalizedRoomCode].markedForDeletion = false;
       games[normalizedRoomCode].deletionTime = null;
     }
