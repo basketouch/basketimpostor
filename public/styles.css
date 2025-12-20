@@ -129,7 +129,7 @@ body {
 /* Imagen del titular */
 .titular-image {
     width: 100%;
-    max-width: 570px; /* Reducido 5% (600px * 0.95) */
+    max-width: 500px;
     height: auto;
     margin: 20px auto;
     display: block;
