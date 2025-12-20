@@ -209,7 +209,13 @@ function showInterstitialAd() {
         if (timeLeft <= 0) {
             clearInterval(interval);
             adInterstitial.style.display = 'none';
-            socket.emit('endRound', { roomCode: currentRoomCode });
+            // Volver al lobby (solo el host emite el evento, pero todos vuelven)
+            if (isHost) {
+                socket.emit('endRound', { roomCode: currentRoomCode });
+            } else {
+                // Los no-host simplemente vuelven al lobby cuando el servidor lo indica
+                showScreen(lobbyScreen);
+            }
         }
     }, 1000);
 }
@@ -346,10 +352,11 @@ socket.on('roundEnded', ({ impostor }) => {
     }
 });
 
-// Cerrar modal y volver al lobby
+// Cerrar modal del impostor y mostrar publicidad intersticial
 closeModalBtn.addEventListener('click', () => {
     impostorRevealModal.style.display = 'none';
-    showScreen(lobbyScreen);
+    // Mostrar publicidad intersticial a TODOS los participantes
+    showInterstitialAd();
 });
 
 socket.on('gameStateChanged', ({ status }) => {
