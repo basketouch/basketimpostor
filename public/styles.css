@@ -869,6 +869,11 @@ h3 {
         border-radius: 15px;
     }
 
+    .titular-image {
+        max-width: 100%;
+        margin: 15px auto;
+    }
+
     h1 {
         font-size: 1.5rem;
     }
