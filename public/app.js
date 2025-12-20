@@ -4,6 +4,13 @@ const socket = io();
 // Verificar conexión
 socket.on('connect', () => {
     console.log('Conectado al servidor:', socket.id);
+    
+    // Si estábamos en una sala, intentar reconectarse
+    if (currentRoomCode) {
+        const name = playerNameInput.value.trim() || 'Jugador';
+        console.log('Reconectando a sala:', currentRoomCode);
+        socket.emit('rejoinGame', { roomCode: currentRoomCode, playerName: name });
+    }
 });
 
 socket.on('disconnect', () => {

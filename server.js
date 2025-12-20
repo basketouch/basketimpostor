@@ -76,18 +76,28 @@ function generateRoomCode() {
   return code;
 }
 
-// Garbage Collection: Eliminar salas inactivas (más de 2 horas)
+// Garbage Collection: Eliminar salas inactivas (más de 2 horas) y salas marcadas para eliminación
 setInterval(() => {
   const now = Date.now();
   const twoHours = 2 * 60 * 60 * 1000;
   
   Object.keys(games).forEach(roomCode => {
-    if (games[roomCode].lastActivity && (now - games[roomCode].lastActivity > twoHours)) {
+    const game = games[roomCode];
+    
+    // Eliminar salas marcadas para eliminación después del tiempo de espera
+    if (game.markedForDeletion && game.deletionTime && now > game.deletionTime) {
+      console.log(`Eliminando sala marcada para eliminación: ${roomCode}`);
+      delete games[roomCode];
+      return;
+    }
+    
+    // Eliminar salas inactivas (más de 2 horas)
+    if (game.lastActivity && (now - game.lastActivity > twoHours)) {
       console.log(`Eliminando sala inactiva: ${roomCode}`);
       delete games[roomCode];
     }
   });
-}, 60 * 60 * 1000); // Ejecutar cada hora
+}, 10000); // Ejecutar cada 10 segundos para verificar eliminaciones diferidas
 
 // Socket.io - Gestión de conexiones
 io.on('connection', (socket) => {
@@ -311,32 +321,85 @@ io.on('connection', (socket) => {
       const playerIndex = game.players.findIndex(p => p.id === socket.id);
       
       if (playerIndex !== -1) {
+        const playerName = game.players[playerIndex].name;
         game.players.splice(playerIndex, 1);
         game.lastActivity = Date.now();
         
-        // Si era el host, asignar nuevo host o eliminar sala si no hay jugadores
+        // Si era el host, asignar nuevo host o marcar para eliminación diferida
         if (game.hostId === socket.id) {
           if (game.players.length > 0) {
             game.hostId = game.players[0].id;
+            // Notificar cambio de host
+            io.to(roomCode).emit('hostChanged', { newHostId: game.hostId });
           } else {
-            delete games[roomCode];
-            console.log(`Sala ${roomCode} eliminada (sin jugadores)`);
-            return;
+            // Si no hay jugadores, marcar para eliminación después de 30 segundos
+            // Esto da tiempo para reconexiones
+            game.markedForDeletion = true;
+            game.deletionTime = Date.now() + 30000; // 30 segundos
+            console.log(`Sala ${roomCode} marcada para eliminación (host desconectado, sin jugadores)`);
           }
         }
         
-        // Si la sala quedó vacía, eliminarla
-        if (game.players.length === 0) {
-          delete games[roomCode];
-          console.log(`Sala ${roomCode} eliminada (sin jugadores)`);
-          return;
+        // Si la sala quedó vacía, marcar para eliminación diferida
+        if (game.players.length === 0 && !game.markedForDeletion) {
+          game.markedForDeletion = true;
+          game.deletionTime = Date.now() + 30000; // 30 segundos
+          console.log(`Sala ${roomCode} marcada para eliminación (sin jugadores)`);
         }
         
         // Notificar a los demás jugadores
-        io.to(roomCode).emit('updatePlayerList', game.players);
-        io.to(roomCode).emit('hostChanged', { newHostId: game.hostId });
+        if (game.players.length > 0) {
+          io.to(roomCode).emit('updatePlayerList', game.players);
+        }
       }
     });
+  });
+
+  // Permitir reconexión a sala existente
+  socket.on('rejoinGame', ({ roomCode, playerName }) => {
+    console.log(`Intento de reconexión a sala ${roomCode} por ${socket.id}`);
+    
+    if (!games[roomCode]) {
+      socket.emit('joinError', { message: 'Sala no encontrada' });
+      return;
+    }
+
+    const game = games[roomCode];
+    
+    // Si la sala estaba marcada para eliminación, cancelarla
+    if (game.markedForDeletion) {
+      game.markedForDeletion = false;
+      game.deletionTime = null;
+      console.log(`Sala ${roomCode} ya no será eliminada (jugador reconectado)`);
+    }
+
+    // Verificar si el jugador ya existe (por nombre, no por socket.id)
+    const existingPlayer = game.players.find(p => p.name === playerName);
+    
+    if (existingPlayer) {
+      // Actualizar el socket.id del jugador existente
+      existingPlayer.id = socket.id;
+      if (game.hostId === existingPlayer.id || (game.players.length === 1 && game.hostId === socket.id)) {
+        game.hostId = socket.id;
+        isHost = true;
+      }
+    } else {
+      // Añadir como nuevo jugador
+      game.players.push({
+        id: socket.id,
+        name: playerName || 'Jugador',
+        avatar: ''
+      });
+    }
+
+    game.lastActivity = Date.now();
+    socket.join(roomCode);
+    
+    const isHost = socket.id === game.hostId;
+    socket.emit('gameJoined', { roomCode, isHost });
+    io.to(roomCode).emit('updatePlayerList', game.players);
+    
+    console.log(`${socket.id} se reconectó a la sala ${roomCode}`);
   });
 });
 
