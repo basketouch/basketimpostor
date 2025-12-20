@@ -126,6 +126,16 @@ body {
     font-size: 1rem;
 }
 
+/* Imagen del titular */
+.titular-image {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    margin: 20px auto;
+    display: block;
+    object-fit: contain;
+}
+
 /* Pantallas */
 .screen {
     display: none;
