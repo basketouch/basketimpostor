@@ -802,6 +802,7 @@ h3 {
     font-weight: 600;
 }
 
+/* Publicidad Intersticial - Adaptada para móviles */
 .ad-container-fullscreen {
     width: 100vw;
     height: 100vh;
@@ -818,7 +819,7 @@ h3 {
 .interstitial-image {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain; /* Muestra toda la imagen sin recortar */
     object-position: center;
     display: block;
     transition: transform 0.3s;
@@ -826,6 +827,7 @@ h3 {
     top: 0;
     left: 0;
     z-index: 1;
+    background: var(--bg); /* Fondo para espacios vacíos si la imagen no llena toda la pantalla */
 }
 
 .ad-container-fullscreen:hover .interstitial-image {
@@ -845,7 +847,21 @@ h3 {
     font-weight: 600;
 }
 
-/* Responsive - Mobile First */
+/* Responsive - Ajustes para móviles */
+@media (max-width: 768px) {
+    .interstitial-image {
+        object-fit: contain;
+        max-width: 100%;
+        max-height: 100%;
+    }
+    
+    .ad-container-fullscreen {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
 @media (max-width: 480px) {
     .container {
         margin: 10px;
