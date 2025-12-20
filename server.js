@@ -395,8 +395,8 @@ io.on('connection', (socket) => {
     game.lastActivity = Date.now();
     socket.join(roomCode);
     
-    const isHost = socket.id === game.hostId;
-    socket.emit('gameJoined', { roomCode, isHost });
+    const isHostRejoin = socket.id === game.hostId;
+    socket.emit('gameJoined', { roomCode, isHost: isHostRejoin });
     io.to(roomCode).emit('updatePlayerList', game.players);
     
     console.log(`${socket.id} se reconectó a la sala ${roomCode}`);
