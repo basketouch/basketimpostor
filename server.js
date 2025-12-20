@@ -378,10 +378,12 @@ io.on('connection', (socket) => {
     
     if (existingPlayer) {
       // Actualizar el socket.id del jugador existente
+      const wasHost = game.hostId === existingPlayer.id;
       existingPlayer.id = socket.id;
-      if (game.hostId === existingPlayer.id || (game.players.length === 1 && game.hostId === socket.id)) {
+      
+      // Si era el host, actualizar el hostId
+      if (wasHost) {
         game.hostId = socket.id;
-        isHost = true;
       }
     } else {
       // Añadir como nuevo jugador
