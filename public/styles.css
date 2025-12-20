@@ -36,7 +36,7 @@ body {
     max-width: 500px;
     margin: 0 auto;
     padding: 20px;
-    background: var(--card);
+    background: #000000; /* Fondo negro puro */
     border-radius: 20px;
     box-shadow: var(--shadow-lg);
     margin-top: 20px;
