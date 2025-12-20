@@ -1,34 +1,6 @@
 // Grupos de localizaciones para Basket Impostor
 const locationGroups = {
-  // Grupo combinado: Leyendas y Baloncesto Actual
-  leyendas: {
-    name: "Leyendas y Baloncesto Actual",
-    description: "Para viejos rockeros... Larry Bird, Pippen, Luka, Anteto... actualidad",
-    locations: [
-      { id: "larry_bird", name: "Larry Bird" },
-      { id: "scottie_pippen", name: "Scottie Pippen" },
-      { id: "magic_johnson", name: "Magic Johnson" },
-      { id: "michael_jordan", name: "Michael Jordan" },
-      { id: "kareem_abdul_jabbar", name: "Kareem Abdul-Jabbar" },
-      { id: "kobe_bryant", name: "Kobe Bryant" },
-      { id: "shaquille_oneal", name: "Shaquille O'Neal" },
-      { id: "tim_duncan", name: "Tim Duncan" },
-      { id: "lebron_james", name: "LeBron James" },
-      { id: "stephen_curry", name: "Stephen Curry" },
-      { id: "kevin_durant", name: "Kevin Durant" },
-      { id: "kawhi_leonard", name: "Kawhi Leonard" },
-      { id: "giannis_antetokounmpo", name: "Giannis Antetokounmpo" },
-      { id: "luka_doncic", name: "Luka Dončić" },
-      { id: "jayson_tatum", name: "Jayson Tatum" },
-      { id: "joel_embiid", name: "Joel Embiid" },
-      { id: "nikola_jokic", name: "Nikola Jokić" },
-      { id: "jimmy_butler", name: "Jimmy Butler" },
-      { id: "devin_booker", name: "Devin Booker" },
-      { id: "damian_lillard", name: "Damian Lillard" }
-    ]
-  },
-  
-  // Grupo: Selección Española
+  // Grupo: Selección Española (PRIMERO)
   seleccion: {
     name: "Selección Española",
     description: "Jugadores de la Selección Española de Baloncesto",
@@ -73,6 +45,34 @@ const locationGroups = {
       { id: "nacho_azofra", name: "Nacho Azofra" },
       { id: "fran_vazquez", name: "Fran Vázquez" },
       { id: "pierre_oriola", name: "Pierre Oriola" }
+    ]
+  },
+  
+  // Grupo combinado: Leyendas y Baloncesto Actual (SEGUNDO)
+  leyendas: {
+    name: "Leyendas y Baloncesto Actual",
+    description: "Para viejos rockeros... Larry Bird, Pippen, Luka, Anteto... actualidad",
+    locations: [
+      { id: "larry_bird", name: "Larry Bird" },
+      { id: "scottie_pippen", name: "Scottie Pippen" },
+      { id: "magic_johnson", name: "Magic Johnson" },
+      { id: "michael_jordan", name: "Michael Jordan" },
+      { id: "kareem_abdul_jabbar", name: "Kareem Abdul-Jabbar" },
+      { id: "kobe_bryant", name: "Kobe Bryant" },
+      { id: "shaquille_oneal", name: "Shaquille O'Neal" },
+      { id: "tim_duncan", name: "Tim Duncan" },
+      { id: "lebron_james", name: "LeBron James" },
+      { id: "stephen_curry", name: "Stephen Curry" },
+      { id: "kevin_durant", name: "Kevin Durant" },
+      { id: "kawhi_leonard", name: "Kawhi Leonard" },
+      { id: "giannis_antetokounmpo", name: "Giannis Antetokounmpo" },
+      { id: "luka_doncic", name: "Luka Dončić" },
+      { id: "jayson_tatum", name: "Jayson Tatum" },
+      { id: "joel_embiid", name: "Joel Embiid" },
+      { id: "nikola_jokic", name: "Nikola Jokić" },
+      { id: "jimmy_butler", name: "Jimmy Butler" },
+      { id: "devin_booker", name: "Devin Booker" },
+      { id: "damian_lillard", name: "Damian Lillard" }
     ]
   }
 };

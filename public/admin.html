@@ -239,12 +239,12 @@
                 <h2>🎯 Partidas por Tema</h2>
                 <div class="theme-stats">
                     <div class="theme-item">
-                        <strong>Leyendas y Baloncesto Actual</strong>
-                        <span id="themeLeyendas">0</span>
-                    </div>
-                    <div class="theme-item">
                         <strong>Selección Española</strong>
                         <span id="themeSeleccion">0</span>
+                    </div>
+                    <div class="theme-item">
+                        <strong>Leyendas y Baloncesto Actual</strong>
+                        <span id="themeLeyendas">0</span>
                     </div>
                 </div>
             </div>
@@ -279,9 +279,9 @@
                     document.getElementById('clicksBanner').textContent = data.clicksPubliBanner || 0;
                     document.getElementById('clicksInterstitial').textContent = data.clicksPubliInterstitial || 0;
 
-                    // Temas
-                    document.getElementById('themeLeyendas').textContent = data.gamesByTheme?.leyendas || 0;
+                    // Temas (orden: Selección primero, luego Leyendas)
                     document.getElementById('themeSeleccion').textContent = data.gamesByTheme?.seleccion || 0;
+                    document.getElementById('themeLeyendas').textContent = data.gamesByTheme?.leyendas || 0;
 
                     // Timestamp
                     const date = new Date(data.timestamp || Date.now());
