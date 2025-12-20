@@ -86,14 +86,14 @@ setInterval(() => {
     
     // Eliminar salas marcadas para eliminación después del tiempo de espera
     if (game.markedForDeletion && game.deletionTime && now > game.deletionTime) {
-      console.log(`Eliminando sala marcada para eliminación: ${roomCode}`);
+      console.log(`[GC] Eliminando sala marcada para eliminación: ${roomCode}`);
       delete games[roomCode];
       return;
     }
     
     // Eliminar salas inactivas (más de 2 horas)
     if (game.lastActivity && (now - game.lastActivity > twoHours)) {
-      console.log(`Eliminando sala inactiva: ${roomCode}`);
+      console.log(`[GC] Eliminando sala inactiva: ${roomCode}`);
       delete games[roomCode];
     }
   });
@@ -135,22 +135,36 @@ io.on('connection', (socket) => {
     stats.totalGames++;
     saveStats();
     
-    console.log(`Partida creada: ${roomCode} por ${socket.id}`);
+    console.log(`[CREATE] Partida creada: ${roomCode} por ${socket.id}`);
+    console.log(`[CREATE] Total de salas activas: ${Object.keys(games).length}`);
   });
 
   // Unirse a partida existente
   socket.on('joinGame', ({ roomCode, playerName }) => {
-    console.log(`Intento de unión a sala ${roomCode} por ${socket.id}`);
-    console.log('Salas activas:', Object.keys(games));
-    console.log('Sala buscada:', roomCode, 'Tipo:', typeof roomCode);
+    console.log(`[JOIN] Intento de unión a sala "${roomCode}" por ${socket.id}`);
+    console.log('[JOIN] Salas activas:', Object.keys(games));
+    console.log('[JOIN] Detalles de salas:', Object.keys(games).map(code => ({
+      code,
+      players: games[code].players.length,
+      status: games[code].status,
+      markedForDeletion: games[code].markedForDeletion || false
+    })));
     
     // Normalizar el código de sala (mayúsculas, sin espacios)
     const normalizedRoomCode = String(roomCode).trim().toUpperCase();
     
     if (!games[normalizedRoomCode]) {
-      console.log(`Sala ${normalizedRoomCode} no encontrada. Salas disponibles:`, Object.keys(games));
-      socket.emit('joinError', { message: 'Sala no encontrada' });
+      console.log(`[JOIN ERROR] Sala "${normalizedRoomCode}" no encontrada.`);
+      console.log('[JOIN ERROR] Salas disponibles:', Object.keys(games));
+      socket.emit('joinError', { message: 'Sala no encontrada. Verifica el código o pide al host que cree una nueva partida.' });
       return;
+    }
+    
+    // Verificar si la sala está marcada para eliminación
+    if (games[normalizedRoomCode].markedForDeletion) {
+      console.log(`[JOIN] Sala ${normalizedRoomCode} está marcada para eliminación, cancelando...`);
+      games[normalizedRoomCode].markedForDeletion = false;
+      games[normalizedRoomCode].deletionTime = null;
     }
     
     // Usar el código normalizado
