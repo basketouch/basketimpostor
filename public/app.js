@@ -210,13 +210,8 @@ function showInterstitialAd() {
         if (timeLeft <= 0) {
             clearInterval(interval);
             adInterstitial.style.display = 'none';
-            // Volver al lobby (solo el host emite el evento, pero todos vuelven)
-            if (isHost) {
-                socket.emit('endRound', { roomCode: currentRoomCode });
-            } else {
-                // Los no-host simplemente vuelven al lobby cuando el servidor lo indica
-                showScreen(lobbyScreen);
-            }
+            // El servidor ya cambió el estado a LOBBY, así que gameStateChanged se encargará
+            // de mostrar el lobby a todos
         }
     }, 1000);
 }
