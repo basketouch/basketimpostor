@@ -41,8 +41,7 @@ let stats = {
   clicksPubliInterstitial: 0,
   gamesByTheme: {
     leyendas: 0,
-    actual: 0,
-    cancha: 0
+    seleccion: 0
   },
   lastReset: new Date().toISOString()
 };
