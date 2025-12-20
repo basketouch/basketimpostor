@@ -106,7 +106,7 @@ io.on('connection', (socket) => {
       currentLocation: null,
       impostorId: null,
       lastImpostorId: null, // Guardar el último impostor para evitar repetición
-      selectedGroup: null, // Grupo seleccionado (leyendas, actual, cancha)
+      selectedGroup: null, // Grupo seleccionado (leyendas, seleccion)
       players: [{
         id: socket.id,
         name: playerName || 'Jugador',
@@ -406,8 +406,7 @@ app.post('/api/stats/reset', (req, res) => {
     clicksPubliInterstitial: 0,
     gamesByTheme: {
       leyendas: 0,
-      actual: 0,
-      cancha: 0
+      seleccion: 0
     },
     lastReset: new Date().toISOString()
   };
