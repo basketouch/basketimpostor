@@ -210,8 +210,8 @@ io.on('connection', (socket) => {
       return;
     }
 
-    if (game.players.length < 2) {
-      socket.emit('error', { message: 'Se necesitan al menos 2 jugadores' });
+    if (game.players.length < 3) {
+      socket.emit('error', { message: 'Se necesitan al menos 3 jugadores para empezar' });
       return;
     }
 

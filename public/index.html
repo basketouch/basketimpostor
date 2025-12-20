@@ -93,7 +93,7 @@
                 <p class="instructions-text">
                     <strong>1. Crea o únete a una partida</strong> con un código de 4 letras<br>
                     <strong>2. Elige un tema</strong><br>
-                    <strong>3. Cuando haya 2+ jugadores, inicia la partida</strong><br>
+                    <strong>3. Cuando haya 3+ jugadores, inicia la partida</strong> (mínimo 3 participantes)<br>
                     <strong>4. Los jugadores normales ven el tema</strong> el impostor NO, debe disimular<br>
                     <strong>5. Haz preguntas para encontrar al impostor</strong> o disimula si eres el impostor<br>
                     <strong>6. Haz las vueltas que sean necesarias</strong> para encontrar al <strong>*IMPOSTOR*</strong>
@@ -138,6 +138,11 @@
                 <div id="selectedGroupDisplay" class="selected-group-display" style="display: none;">
                     <p>Grupo seleccionado: <strong id="selectedGroupName"></strong></p>
                 </div>
+            </div>
+
+            <!-- Aviso de mínimo de jugadores -->
+            <div id="minPlayersWarning" class="min-players-warning" style="display: none;">
+                <p>⚠️ Se necesitan al menos <strong>3 jugadores</strong> para empezar la partida</p>
             </div>
 
             <div class="button-group">

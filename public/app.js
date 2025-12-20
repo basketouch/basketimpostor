@@ -52,6 +52,7 @@ const instructionsContent = document.getElementById('instructionsContent');
 const impostorRevealModal = document.getElementById('impostorRevealModal');
 const impostorName = document.getElementById('impostorName');
 const closeModalBtn = document.getElementById('closeModalBtn');
+const minPlayersWarning = document.getElementById('minPlayersWarning');
 
 // Funciones de utilidad
 function showScreen(screen) {
@@ -80,6 +81,23 @@ function updatePlayerList(players) {
         }
         playersList.appendChild(li);
     });
+
+    // Mostrar/ocultar aviso de mínimo de jugadores
+    if (isHost && players.length < 3) {
+        minPlayersWarning.style.display = 'block';
+        if (startGameBtn) {
+            startGameBtn.disabled = true;
+            startGameBtn.style.opacity = '0.5';
+            startGameBtn.style.cursor = 'not-allowed';
+        }
+    } else {
+        minPlayersWarning.style.display = 'none';
+        if (startGameBtn) {
+            startGameBtn.disabled = false;
+            startGameBtn.style.opacity = '1';
+            startGameBtn.style.cursor = 'pointer';
+        }
+    }
 }
 
 // Event Listeners
