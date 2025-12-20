@@ -186,7 +186,8 @@ leaveLobbyBtn.addEventListener('click', () => {
 
 endRoundBtn.addEventListener('click', () => {
     if (isHost) {
-        showInterstitialAd();
+        // El servidor enviará roundEnded a todos, que mostrará el modal del impostor
+        socket.emit('endRound', { roomCode: currentRoomCode });
     }
 });
 
