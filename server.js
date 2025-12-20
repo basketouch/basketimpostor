@@ -76,28 +76,18 @@ function generateRoomCode() {
   return code;
 }
 
-// Garbage Collection: Eliminar salas inactivas (más de 2 horas) y salas marcadas para eliminación
+// Garbage Collection: Eliminar salas inactivas (más de 2 horas)
 setInterval(() => {
   const now = Date.now();
   const twoHours = 2 * 60 * 60 * 1000;
   
   Object.keys(games).forEach(roomCode => {
-    const game = games[roomCode];
-    
-    // Eliminar salas marcadas para eliminación después del tiempo de espera
-    if (game.markedForDeletion && game.deletionTime && now > game.deletionTime) {
-      console.log(`[GC] Eliminando sala marcada para eliminación: ${roomCode}`);
-      delete games[roomCode];
-      return;
-    }
-    
-    // Eliminar salas inactivas (más de 2 horas)
-    if (game.lastActivity && (now - game.lastActivity > twoHours)) {
-      console.log(`[GC] Eliminando sala inactiva: ${roomCode}`);
+    if (games[roomCode].lastActivity && (now - games[roomCode].lastActivity > twoHours)) {
+      console.log(`Eliminando sala inactiva: ${roomCode}`);
       delete games[roomCode];
     }
   });
-}, 10000); // Ejecutar cada 10 segundos para verificar eliminaciones diferidas
+}, 60 * 60 * 1000); // Ejecutar cada hora
 
 // Socket.io - Gestión de conexiones
 io.on('connection', (socket) => {
@@ -141,36 +131,20 @@ io.on('connection', (socket) => {
 
   // Unirse a partida existente
   socket.on('joinGame', ({ roomCode, playerName }) => {
-    console.log(`[JOIN] Intento de unión a sala "${roomCode}" por ${socket.id}`);
-    console.log('[JOIN] Salas activas:', Object.keys(games));
-    console.log('[JOIN] Detalles de salas:', Object.keys(games).map(code => ({
-      code,
-      players: games[code].players.length,
-      status: games[code].status,
-      markedForDeletion: games[code].markedForDeletion || false
-    })));
+    console.log(`Intento de unión a sala ${roomCode} por ${socket.id}`);
+    console.log('Salas activas:', Object.keys(games));
     
     // Normalizar el código de sala (mayúsculas, sin espacios)
     const normalizedRoomCode = String(roomCode).trim().toUpperCase();
     
     if (!games[normalizedRoomCode]) {
-      console.log(`[JOIN ERROR] Sala "${normalizedRoomCode}" no encontrada.`);
-      console.log('[JOIN ERROR] Salas disponibles:', Object.keys(games));
-      socket.emit('joinError', { message: 'Sala no encontrada. Verifica el código o pide al host que cree una nueva partida.' });
+      console.log(`Sala ${normalizedRoomCode} no encontrada. Salas disponibles:`, Object.keys(games));
+      socket.emit('joinError', { message: 'Sala no encontrada' });
       return;
     }
-    
-    // Verificar si la sala está marcada para eliminación y cancelarla
-    if (games[normalizedRoomCode].markedForDeletion) {
-      console.log(`[JOIN] Sala ${normalizedRoomCode} estaba marcada para eliminación, cancelando...`);
-      games[normalizedRoomCode].markedForDeletion = false;
-      games[normalizedRoomCode].deletionTime = null;
-    }
-    
-    // Usar el código normalizado
-    roomCode = normalizedRoomCode;
 
-    const game = games[roomCode];
+    const game = games[normalizedRoomCode];
+    roomCode = normalizedRoomCode;
     
     if (game.status !== 'LOBBY') {
       socket.emit('joinError', { message: 'La partida ya ha comenzado' });
@@ -204,6 +178,9 @@ io.on('connection', (socket) => {
     
     console.log(`${socket.id} se unió a la sala ${roomCode}`);
   });
+
+  // Eliminar el handler de rejoinGame ya que está causando problemas
+  // La reconexión automática se manejará con joinGame normal
 
   // Seleccionar grupo de localizaciones (solo el host)
   socket.on('selectGroup', ({ roomCode, groupKey }) => {
