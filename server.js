@@ -274,14 +274,31 @@ io.on('connection', (socket) => {
       return;
     }
 
+    // Obtener información del impostor antes de resetear
+    let impostorInfo = null;
+    if (game.impostorId) {
+      const impostor = game.players.find(p => p.id === game.impostorId);
+      if (impostor) {
+        impostorInfo = {
+          id: impostor.id,
+          name: impostor.name
+        };
+      }
+    }
+
     game.status = 'LOBBY';
     game.currentLocation = null;
     game.impostorId = null;
     game.lastActivity = Date.now();
 
+    // Enviar información del impostor a todos los jugadores
+    if (impostorInfo) {
+      io.to(roomCode).emit('roundEnded', { impostor: impostorInfo });
+    }
+
     io.to(roomCode).emit('gameStateChanged', { status: 'LOBBY' });
     io.to(roomCode).emit('updatePlayerList', game.players);
-    console.log(`Ronda finalizada en sala ${roomCode}`);
+    console.log(`Ronda finalizada en sala ${roomCode}. Impostor: ${impostorInfo ? impostorInfo.name : 'N/A'}`);
   });
 
   // Manejo de desconexión

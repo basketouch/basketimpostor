@@ -49,6 +49,9 @@ const selectedGroupName = document.getElementById('selectedGroupName');
 const groupButtons = document.querySelectorAll('.group-btn');
 const instructionsToggle = document.getElementById('instructionsToggle');
 const instructionsContent = document.getElementById('instructionsContent');
+const impostorRevealModal = document.getElementById('impostorRevealModal');
+const impostorName = document.getElementById('impostorName');
+const closeModalBtn = document.getElementById('closeModalBtn');
 
 // Funciones de utilidad
 function showScreen(screen) {
@@ -315,6 +318,20 @@ function trackClick(type) {
         body: JSON.stringify({ type })
     }).catch(err => console.error('Error tracking click:', err));
 }
+
+// Handler para cuando termina la ronda - mostrar quién era el impostor
+socket.on('roundEnded', ({ impostor }) => {
+    if (impostor) {
+        impostorName.textContent = impostor.name;
+        impostorRevealModal.style.display = 'flex';
+    }
+});
+
+// Cerrar modal y volver al lobby
+closeModalBtn.addEventListener('click', () => {
+    impostorRevealModal.style.display = 'none';
+    showScreen(lobbyScreen);
+});
 
 socket.on('gameStateChanged', ({ status }) => {
     if (status === 'LOBBY') {
