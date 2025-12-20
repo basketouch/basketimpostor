@@ -142,38 +142,47 @@ io.on('connection', (socket) => {
   socket.on('joinGame', ({ roomCode, playerName }) => {
     console.log(`Intento de unión a sala ${roomCode} por ${socket.id}`);
     console.log('Salas activas:', Object.keys(games));
+    console.log('Sala buscada:', roomCode, 'Tipo:', typeof roomCode);
     
-    if (!games[roomCode]) {
-      console.log(`Sala ${roomCode} no encontrada. Salas disponibles:`, Object.keys(games));
+    // Normalizar el código de sala (mayúsculas, sin espacios)
+    const normalizedRoomCode = String(roomCode).trim().toUpperCase();
+    
+    if (!games[normalizedRoomCode]) {
+      console.log(`Sala ${normalizedRoomCode} no encontrada. Salas disponibles:`, Object.keys(games));
       socket.emit('joinError', { message: 'Sala no encontrada' });
       return;
     }
+    
+    // Usar el código normalizado
+    roomCode = normalizedRoomCode;
 
-    if (games[roomCode].status !== 'LOBBY') {
+    const game = games[roomCode];
+    
+    if (game.status !== 'LOBBY') {
       socket.emit('joinError', { message: 'La partida ya ha comenzado' });
       return;
     }
 
     // Verificar si el jugador ya está en la sala
-    const existingPlayer = games[roomCode].players.find(p => p.id === socket.id);
+    const existingPlayer = game.players.find(p => p.id === socket.id);
     if (existingPlayer) {
-      socket.emit('gameJoined', { roomCode, isHost: socket.id === games[roomCode].hostId });
-      socket.emit('updatePlayerList', games[roomCode].players);
+      socket.emit('gameJoined', { roomCode, isHost: socket.id === game.hostId });
+      socket.emit('updatePlayerList', game.players);
       return;
     }
 
-    games[roomCode].players.push({
+    game.players.push({
       id: socket.id,
       name: playerName || 'Jugador',
       avatar: ''
     });
 
-    games[roomCode].lastActivity = Date.now();
+    game.lastActivity = Date.now();
     socket.join(roomCode);
-    socket.emit('gameJoined', { roomCode, isHost: socket.id === games[roomCode].hostId });
+    socket.emit('gameJoined', { roomCode, isHost: socket.id === game.hostId });
     
     // Notificar a todos los jugadores de la actualización
-    io.to(roomCode).emit('updatePlayerList', games[roomCode].players);
+    io.to(roomCode).emit('updatePlayerList', game.players);
     
     // Estadísticas
     stats.totalPlayers++;

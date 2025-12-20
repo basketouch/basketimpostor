@@ -5,8 +5,8 @@ const socket = io();
 socket.on('connect', () => {
     console.log('Conectado al servidor:', socket.id);
     
-    // Si estábamos en una sala, intentar reconectarse
-    if (currentRoomCode) {
+    // Si estábamos en una sala y estamos en el lobby, intentar reconectarse
+    if (currentRoomCode && lobbyScreen.style.display !== 'none') {
         const name = playerNameInput.value.trim() || 'Jugador';
         console.log('Reconectando a sala:', currentRoomCode);
         socket.emit('rejoinGame', { roomCode: currentRoomCode, playerName: name });
